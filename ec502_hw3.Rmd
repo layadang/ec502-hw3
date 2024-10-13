@@ -1,0 +1,114 @@
+---
+title: "EC 502 HW3 R Notebook"
+author: "Laya Dang (pd03@bu.edu)"
+output: pdf_document
+---
+
+
+### Import tidyverse
+
+```{r}
+library(tidyverse)
+```
+
+### Load the dataset:
+
+```{r}
+country_data = read.csv("cross_country_data.csv")
+head(country_data, 10)
+```
+
+### Calculate (real) GDP per worker :
+
+```{r}
+country_data <- transform(country_data, rgdp_per_worker = RealGDP / LaborForce)
+head(country_data[c('Country', 'RealGDP', 'LaborForce', 'rgdp_per_worker')], 10)
+```
+
+### Average rGDP per worker and average savings rate:
+
+```{r}
+head(country_data %>% 
+  group_by(Country) %>% 
+  summarise_at(vars(rgdp_per_worker, SavingsRate), list(mean = mean)), 10)
+```
+
+### Average growth rate of the labor force and average growth rate of GDP per worker (from 1981 to 2010):
+
+t = 1981
+
+T = 2010 - 1981 = 29
+
+formula: 1/29 \* ln(val at 2010 / val at 1981)
+
+(log in R has base e)
+
+```{r}
+country_data_2010_1980 <- country_data %>% 
+  filter(Year %in% c(1980, 2010)) %>% 
+  select(Country, Year, LaborForce, rgdp_per_worker) %>% 
+  pivot_wider(names_from = Year, 
+              values_from = c(rgdp_per_worker, LaborForce), 
+              names_sep = "_", 
+              names_prefix = "year_") %>% 
+  transform(avg_growth_labor = (1/29) * log(LaborForce_year_2010 / LaborForce_year_1980)) %>% 
+  transform(avg_gdp_per_worker = (1/29) * log(rgdp_per_worker_year_2010 / rgdp_per_worker_year_1980))
+
+# only show avg growth rates 
+head(country_data_2010_1980 %>% select(Country, avg_growth_labor, avg_gdp_per_worker), 10)
+```
+
+# Question (1) Summary Stats
+
+### a) number of countries
+
+```{r}
+country_data %>%  summarise(num_countries = n_distinct(Country))
+```
+
+### b) mean (across countries) of rgdp per worker 1981, rgdp per worker 2010, savings rate, growth of labor force, growth rate of GDP per worker
+
+```{r}
+country_data_2010_1980 %>% 
+  summarise_at(vars(rgdp_per_worker_year_1980, rgdp_per_worker_year_2010, avg_growth_labor, avg_gdp_per_worker), list(mean = mean)) %>% 
+  pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
+```
+
+Savings rate (s):
+
+```{r}
+country_data %>% 
+  summarise_at(vars(SavingsRate), list(mean=mean))
+```
+
+### c) standard deviation of vals above
+
+```{r}
+country_data_2010_1980 %>% 
+  summarise_at(vars(rgdp_per_worker_year_1980, rgdp_per_worker_year_2010, avg_growth_labor, avg_gdp_per_worker), list(sd = sd)) %>% 
+  pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
+```
+
+Savings rate (s):
+
+```{r}
+country_data %>% 
+  summarise_at(vars(SavingsRate), list(sd=sd)) %>% 
+  pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
+```
+
+### d) min and max of vals above
+
+```{r}
+country_data_2010_1980 %>% 
+  summarise_at(vars(rgdp_per_worker_year_1980, rgdp_per_worker_year_2010, avg_growth_labor, avg_gdp_per_worker), list(min = min, max = max)) %>% 
+  pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
+```
+
+Savings rate (s):
+
+```{r}
+country_data %>% 
+  summarise_at(vars(SavingsRate), list(min = min, max = max)) %>% 
+  pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
+```
