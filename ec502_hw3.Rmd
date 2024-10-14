@@ -80,11 +80,15 @@ summary_country_data <- country_data %>%
               values_from = c(output_per_worker, LaborForce), 
               names_sep = "_", 
               names_prefix = "year_") %>% 
-  transform(avg_growth_labor = (1/29) * log(LaborForce_year_2010 / LaborForce_year_1981)) %>% 
-  transform(avg_growth_gdp_per_worker = (1/29) * log(output_per_worker_year_2010 / output_per_worker_year_1981)) %>% 
+  transform(avg_growth_labor = 
+              (1/29) * log(LaborForce_year_2010 / LaborForce_year_1981)) %>% 
+  transform(avg_growth_gdp_per_worker = 
+              (1/29) * log(output_per_worker_year_2010 / output_per_worker_year_1981)) %>% 
   left_join(summary_country_data, by = "Country")
 
-head(summary_country_data %>% select(Country, avg_growth_labor, avg_growth_gdp_per_worker, savings_mean), 5)
+head(summary_country_data %>% 
+       select(Country, avg_growth_labor, avg_growth_gdp_per_worker, savings_mean), 
+     5)
 
 ```
 \newpage
@@ -110,7 +114,6 @@ summary_country_data %>%
   pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
 ```
 
-\newpage
 ### c) standard deviation (of values above)
 
 ```{r}
@@ -163,7 +166,8 @@ Plot:
 summary_country_data %>% 
   ggplot(aes(x=log(output_per_worker_year_1981), y=avg_growth_gdp_per_worker)) +
   geom_point() +
-  labs(title="Plot of Average GDP per Worker Growth Rate and GDP per Worker in 1981\nof All Countries ",
+  labs(title="Plot of Average GDP per Worker Growth Rate and GDP per Worker in 1981
+       \nof All Countries ",
         x ="GDP per Worker in 1981 (log)", y = "Average Growth Rate of GDP per Worker")
 
 ```
@@ -275,7 +279,8 @@ Plots:
 hj_data %>% 
   ggplot(aes(x=log_A_estimate, y=log(output_per_worker_year_2010))) +
   geom_point() +
-  labs(title="Plot of Output per Capita and A (productivity or technology) estimate in 2010 \nbased on HJ model",
+  labs(title="Plot of Output per Capita and A (productivity or technology) estimate in 2010 
+       \nbased on HJ model",
         x ="Estimate of A (log)", y = "rGDP per Worker in 2010 (log)")
 ```
 
@@ -283,7 +288,8 @@ hj_data %>%
 hj_data %>% 
   ggplot(aes(x=log_A_estimate, y=log(HumanCapital))) +
   geom_point() +
-  labs(title="Plot of Human Capital per Person and A (productivity or technology) estimate \nin 2010 based on HJ model",
+  labs(title="Plot of Human Capital per Person and A (productivity or technology) estimate 
+       \nin 2010 based on HJ model",
         x ="Estimate of A (log)", y = "Human Capital per Person in 2010 (log)")
 ```
 
