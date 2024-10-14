@@ -162,14 +162,13 @@ summary_country_data %>%
 Plot:
 
 ```{r}
-
 summary_country_data %>% 
   ggplot(aes(x=log(output_per_worker_year_1981), y=avg_growth_gdp_per_worker)) +
   geom_point() +
-  labs(title="Plot of Average GDP per Worker Growth Rate and GDP per Worker in 1981
-       \nof All Countries ",
-        x ="GDP per Worker in 1981 (log)", y = "Average Growth Rate of GDP per Worker")
-
+  labs(title="Average GDP per Worker Growth Rate and GDP per Worker
+  \nin 1981 of All Countries ",
+        x ="GDP per Worker in 1981 (log)", y = "Average Growth Rate of GDP per Worker") +
+  theme(plot.title = element_text(lineheight=.5))
 ```
 
 OLS Regression:
@@ -279,18 +278,22 @@ Plots:
 hj_data %>% 
   ggplot(aes(x=log_A_estimate, y=log(output_per_worker_year_2010))) +
   geom_point() +
-  labs(title="Plot of Output per Capita and A (productivity or technology) estimate in 2010 
-       \nbased on HJ model",
-        x ="Estimate of A (log)", y = "rGDP per Worker in 2010 (log)")
+  labs(title="Output per Capita and A (productivity or technology)
+  \nestimate in 2010 based on HJ model",
+        x ="Estimate of A (log)", y = "rGDP per Worker in 2010 (log)") +
+  theme(plot.title = element_text(lineheight=.5))
+
 ```
 
 ```{r}
 hj_data %>% 
   ggplot(aes(x=log_A_estimate, y=log(HumanCapital))) +
   geom_point() +
-  labs(title="Plot of Human Capital per Person and A (productivity or technology) estimate 
-       \nin 2010 based on HJ model",
-        x ="Estimate of A (log)", y = "Human Capital per Person in 2010 (log)")
+  labs(title="Plot of Human Capital per Person and A (productivity or technology) 
+  \nestimate in 2010 based on HJ model",
+        x ="Estimate of A (log)", y = "Human Capital per Person in 2010 (log)") +
+  theme(plot.title = element_text(lineheight=.5))
+
 ```
 
 ```{r}
