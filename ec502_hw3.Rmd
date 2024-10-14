@@ -2,10 +2,14 @@
 title: "EC 502 HW3 R Notebook"
 author: "Laya Dang (pd03@bu.edu)"
 output:
+  pdf_document:
+    latex_engine: xelatex
+    df_print: kable
   html_document:
     df_print: paged
-  pdf_document:
-    df_print: kable
+header-includes:
+  - \usepackage{fontspec}
+  - \setmainfont{Arial}
 ---
 # Data Import, Clean, and Set-up
 
