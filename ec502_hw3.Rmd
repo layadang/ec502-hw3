@@ -1,36 +1,52 @@
 ---
 title: "EC 502 HW3 R Notebook"
 author: "Laya Dang (pd03@bu.edu)"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
-
+# Data Set-up
 
 ### Import tidyverse
 
 ```{r}
-library(tidyverse)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(ggplot2)
+})
 ```
 
 ### Load the dataset:
 
 ```{r}
 country_data = read.csv("cross_country_data.csv")
-head(country_data, 10)
+head(country_data, 5)
 ```
 
-### Calculate (real) GDP per worker :
+### Calculate (real) GDP per worker in 1981 and 2010:
 
 ```{r}
-country_data <- transform(country_data, rgdp_per_worker = RealGDP / LaborForce)
-head(country_data[c('Country', 'RealGDP', 'LaborForce', 'rgdp_per_worker')], 10)
+country_data <- country_data %>% 
+  transform(output_per_worker = RealGDP / LaborForce)
+  
+country_data_gdp_per_worker_1981_2010 <- country_data %>% 
+  filter(Year %in% c(1981, 2010)) %>% 
+  select(Country, Year, output_per_worker) %>% 
+  pivot_wider(names_from = Year, 
+             values_from = output_per_worker, 
+             names_prefix = "output_per_worker_")
+
+head(country_data_gdp_per_worker_1981_2010, 5)
 ```
 
-### Average rGDP per worker and average savings rate:
+### Average output per worker and average savings rate:
 
 ```{r}
-head(country_data %>% 
+summary_country_data <- country_data %>% 
   group_by(Country) %>% 
-  summarise_at(vars(rgdp_per_worker, SavingsRate), list(mean = mean)), 10)
+  summarise_at(vars(SavingsRate), list(savings_mean = mean))
+
+head(summary_country_data, 5)
 ```
 
 ### Average growth rate of the labor force and average growth rate of GDP per worker (from 1981 to 2010):
@@ -39,26 +55,34 @@ t = 1981
 
 T = 2010 - 1981 = 29
 
-formula: 1/29 \* ln(val at 2010 / val at 1981)
+formula: 1/29 * ln(val at 2010 / val at 1981)
 
 (log in R has base e)
 
+
 ```{r}
-country_data_2010_1980 <- country_data %>% 
-  filter(Year %in% c(1980, 2010)) %>% 
-  select(Country, Year, LaborForce, rgdp_per_worker) %>% 
+# GET SAVINGS MEAN
+summary_country_data <- country_data %>% 
+  group_by(Country) %>% 
+  summarise_at(vars(SavingsRate), list(savings_mean = mean))
+
+# GET AVG GROWTH RATE OF LABOR (n) and AVG GROWTH RATE OF GDP PER WORKER (g)
+summary_country_data <- country_data %>% 
+  filter(Year %in% c(1981, 2010)) %>% 
+  select(Country, Year, LaborForce, output_per_worker) %>% 
   pivot_wider(names_from = Year, 
-              values_from = c(rgdp_per_worker, LaborForce), 
+              values_from = c(output_per_worker, LaborForce), 
               names_sep = "_", 
               names_prefix = "year_") %>% 
-  transform(avg_growth_labor = (1/29) * log(LaborForce_year_2010 / LaborForce_year_1980)) %>% 
-  transform(avg_gdp_per_worker = (1/29) * log(rgdp_per_worker_year_2010 / rgdp_per_worker_year_1980))
+  transform(avg_growth_labor = (1/29) * log(LaborForce_year_2010 / LaborForce_year_1981)) %>% 
+  transform(avg_growth_gdp_per_worker = (1/29) * log(output_per_worker_year_2010 / output_per_worker_year_1981)) %>% 
+  left_join(summary_country_data, by = "Country")
 
-# only show avg growth rates 
-head(country_data_2010_1980 %>% select(Country, avg_growth_labor, avg_gdp_per_worker), 10)
+head(summary_country_data %>% select(Country, avg_growth_labor, avg_growth_gdp_per_worker, savings_mean), 5)
+
 ```
 
-# Question (1) Summary Stats
+# Question (1) Descriptive Statistics
 
 ### a) number of countries
 
@@ -66,49 +90,216 @@ head(country_data_2010_1980 %>% select(Country, avg_growth_labor, avg_gdp_per_wo
 country_data %>%  summarise(num_countries = n_distinct(Country))
 ```
 
-### b) mean (across countries) of rgdp per worker 1981, rgdp per worker 2010, savings rate, growth of labor force, growth rate of GDP per worker
+### b) mean (across countries) of output per worker 1981, output per worker 2010, savings rate, growth of labor force, growth rate of GDP per worker
 
 ```{r}
-country_data_2010_1980 %>% 
-  summarise_at(vars(rgdp_per_worker_year_1980, rgdp_per_worker_year_2010, avg_growth_labor, avg_gdp_per_worker), list(mean = mean)) %>% 
+summary_country_data %>% 
+  summarise_at(vars(output_per_worker_year_1981, 
+                    output_per_worker_year_2010, 
+                    savings_mean,
+                    avg_growth_labor, 
+                    avg_growth_gdp_per_worker), 
+               list(mean = mean)) %>% 
+  mutate(across(everything(), ~ round(., digits = 4))) %>%  
   pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
 ```
 
-Savings rate (s):
-
-```{r}
-country_data %>% 
-  summarise_at(vars(SavingsRate), list(mean=mean))
-```
 
 ### c) standard deviation of vals above
 
 ```{r}
-country_data_2010_1980 %>% 
-  summarise_at(vars(rgdp_per_worker_year_1980, rgdp_per_worker_year_2010, avg_growth_labor, avg_gdp_per_worker), list(sd = sd)) %>% 
-  pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
-```
-
-Savings rate (s):
-
-```{r}
-country_data %>% 
-  summarise_at(vars(SavingsRate), list(sd=sd)) %>% 
+summary_country_data %>% 
+  summarise_at(vars(output_per_worker_year_1981, 
+                    output_per_worker_year_2010, 
+                    savings_mean,
+                    avg_growth_labor, 
+                    avg_growth_gdp_per_worker), list(sd = sd)) %>% 
+  mutate(across(everything(), ~ round(., digits = 4))) %>%  
   pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
 ```
 
 ### d) min and max of vals above
 
+Min: 
+
 ```{r}
-country_data_2010_1980 %>% 
-  summarise_at(vars(rgdp_per_worker_year_1980, rgdp_per_worker_year_2010, avg_growth_labor, avg_gdp_per_worker), list(min = min, max = max)) %>% 
+summary_country_data %>% 
+  summarise_at(vars(output_per_worker_year_1981, 
+                    output_per_worker_year_2010, 
+                    savings_mean,
+                    avg_growth_labor,
+                    avg_growth_gdp_per_worker), 
+               list(min = min)) %>% 
+  mutate(across(everything(), ~ round(., digits = 4))) %>%  
   pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
 ```
 
-Savings rate (s):
+Max:
 
 ```{r}
-country_data %>% 
-  summarise_at(vars(SavingsRate), list(min = min, max = max)) %>% 
+summary_country_data %>% 
+  summarise_at(vars(output_per_worker_year_1981, 
+                    output_per_worker_year_2010, 
+                    savings_mean,
+                    avg_growth_labor,
+                    avg_growth_gdp_per_worker), 
+               list(max = max)) %>% 
+  mutate(across(everything(), ~ round(., digits = 4))) %>%  
   pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
 ```
+
+# Question (2) Unconditional Convergence
+
+Plot:
+
+```{r}
+
+summary_country_data %>% 
+  ggplot(aes(x=log(output_per_worker_year_1981), y=avg_growth_gdp_per_worker)) +
+  geom_point() +
+  labs(title="Plot of Average GDP per Worker Growth Rate and GDP per Worker in 1981\nof All Countries ",
+        x ="GDP per Worker in 1981 (log)", y = "Average Growth Rate of GDP per Worker")
+
+```
+
+OLS Regression:
+
+
+```{r}
+ols_data <- data.frame(
+  # y value:
+  avg_growth_gdp_per_worker = summary_country_data[['avg_growth_gdp_per_worker']],
+  # x value:
+  log_output_per_worker_year_1981 = log(summary_country_data[['output_per_worker_year_1981']])
+)
+
+head(ols_data, 5)
+```
+
+```{r}
+
+ols_model <- lm(avg_growth_gdp_per_worker~log_output_per_worker_year_1981, data=ols_data)
+summary(ols_model)
+
+```
+
+From the above OLS model, we get the formula where g = 0.037238 + -0.002724 * log(Y/L) + 0.0179
+
+The estimate for b1(hat) is -0.002724 and its standard error is 0.001332
+
+This implies that the living standards in nations that are initially poorer (lower GDP per worker in 1981) fall behind compared to wealthier nations, indicated by the negative b1 coefficient. However, the low R-squared value (3.48%) suggests that while GDP per worker in 1981 does have some predictive power, there are likely other important factors not included in the model.
+
+# Question (3) MRW Revisited
+
+```{r}
+ols_data_mrw <- data.frame(
+  # y value:
+  avg_growth_gdp_per_worker = summary_country_data[['avg_growth_gdp_per_worker']],
+  # x1 value:
+  log_output_per_worker_year_1981 = log(summary_country_data[['output_per_worker_year_1981']]),
+  # x2 value:
+  log_avg_growth_labor_plus_0.05 = log(summary_country_data[['avg_growth_labor']] + 0.05 )
+)
+
+head(ols_data_mrw, 5)
+
+```
+
+```{r}
+ols_model_mrw <- lm(avg_growth_gdp_per_worker~log_output_per_worker_year_1981+log_avg_growth_labor_plus_0.05, data=ols_data_mrw)
+summary(ols_model_mrw)
+```
+
+The estimate for b1(hat) is -0.003519 and its standard error is 0.001218, which implies a higher impact of savings on living standards than before, as this value is more negative.
+
+The value of alpha is implied to be 0.003519, which means labor share is around (1 - 0.003519) 0.996481, or the majority of output. This is not consistent with the standard assumption of 2/3. 
+
+The R-squared is 0.2129, which indicates that the model does not do a good job of indicating the variance in the model, and there is not much predictive power the coefficients have. The model only explains 21.29% of the variance.
+
+# Question (4) HJ Levels Accounting
+
+A = (Y/L) * (K/Y)^(1-a/a) * (L/H)
+
+where a = 1/3:
+
+A = (Y/L) * (K/Y)^(2/9) * (L/H)
+
+Calculate parts of the equation:
+
+```{r}
+
+hj_data <- country_data %>% 
+  filter(Year == 2010) %>% 
+  transform(capital_per_output = PhysicalCapital / RealGDP) %>%  # capital per output in 2010 
+  transform(recip_human_cap = 1 / HumanCapital) %>%  # reciprocal of human capital per person
+  select(Country, Year, capital_per_output, recip_human_cap, HumanCapital)
+
+head(hj_data %>% select(-HumanCapital), 5)
+
+```
+
+
+Estimate A:
+
+```{r}
+
+hj_data <- hj_data %>% 
+  left_join(summary_country_data %>% select(Country, output_per_worker_year_2010), by="Country") %>% 
+  transform(A_estimate = output_per_worker_year_2010 * capital_per_output^(2/9) * recip_human_cap) %>% 
+  transform(log_A_estimate = log(A_estimate))
+
+head(hj_data %>%  select(A_estimate, log_A_estimate), 5)
+
+```
+
+Summary statistics:
+
+```{r}
+
+hj_data %>% 
+  summarise_at(vars(log_A_estimate), list(log_A_mean = mean, log_A_sd = sd))
+
+```
+
+Plots:
+
+```{r}
+hj_data %>% 
+  ggplot(aes(x=log_A_estimate, y=log(output_per_worker_year_2010))) +
+  geom_point() +
+  labs(title="Plot of Output per Capita and A (productivity or technology) estimate in 2010 \nbased on HJ model",
+        x ="Estimate of A (log)", y = "rGDP per Worker in 2010 (log)")
+```
+
+```{r}
+hj_data %>% 
+  ggplot(aes(x=log_A_estimate, y=log(HumanCapital))) +
+  geom_point() +
+  labs(title="Plot of Human Capital per Person and A (productivity or technology) estimate \nin 2010 based on HJ model",
+        x ="Estimate of A (log)", y = "Human Capital per Person in 2010 (log)")
+```
+
+```{r}
+hj_ols_model <- lm(log(output_per_worker_year_2010)~log_A_estimate, data=hj_data)
+summary(hj_ols_model)
+```
+
+
+The estimated b1(hat), or the coefficient for A, is 1.12432, and since this is a positive coefficient, the model suggests that living standards (Y/L) is higher in nations with higher productivity (A). The R-squared is 0.9801, which means the model is a good fit and explains 98.01% of the variance in the data. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
