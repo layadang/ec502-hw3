@@ -1626,10 +1626,10 @@ display: none;
 </div>
 
 
-<div id="data-set-up" class="section level1">
-<h1>Data Set-up</h1>
-<div id="import-tidyverse" class="section level3">
-<h3>Import tidyverse</h3>
+<div id="data-import-clean-and-set-up" class="section level1">
+<h1>Data Import, Clean, and Set-up</h1>
+<div id="import-libraries" class="section level3">
+<h3>Import libraries</h3>
 <pre class="r"><code>suppressPackageStartupMessages({
   library(tidyverse)
   library(ggplot2)
@@ -1638,12 +1638,13 @@ display: none;
 <div id="load-the-dataset" class="section level3">
 <h3>Load the dataset:</h3>
 <pre class="r"><code>country_data = read.csv(&quot;cross_country_data.csv&quot;)
-head(country_data, 5)</code></pre>
+head(country_data, 10)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Year"],"name":[2],"type":["int"],"align":["right"]},{"label":["SavingsRate"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["RealGDP"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["LaborForce"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["HumanCapital"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["PhysicalCapital"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"Albania","2":"1980","3":"0.3934749","4":"9981.908","5":"0.9249071","6":"2.395581","7":"42834.52","_rn_":"1"},{"1":"Albania","2":"1981","3":"0.4208891","4":"10555.427","5":"0.9514943","6":"2.445612","7":"45231.09","_rn_":"2"},{"1":"Albania","2":"1982","3":"0.4482948","4":"10866.670","5":"0.9771618","6":"2.496687","7":"47943.00","_rn_":"3"},{"1":"Albania","2":"1983","3":"0.4195175","4":"10986.740","5":"1.0006725","6":"2.548830","7":"50831.43","_rn_":"4"},{"1":"Albania","2":"1984","3":"0.3768510","4":"10849.229","5":"1.0246358","6":"2.588237","7":"53751.48","_rn_":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Year"],"name":[2],"type":["int"],"align":["right"]},{"label":["SavingsRate"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["RealGDP"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["LaborForce"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["HumanCapital"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["PhysicalCapital"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"Albania","2":"1980","3":"0.3934749","4":"9981.908","5":"0.9249071","6":"2.395581","7":"42834.52","_rn_":"1"},{"1":"Albania","2":"1981","3":"0.4208891","4":"10555.427","5":"0.9514943","6":"2.445612","7":"45231.09","_rn_":"2"},{"1":"Albania","2":"1982","3":"0.4482948","4":"10866.670","5":"0.9771618","6":"2.496687","7":"47943.00","_rn_":"3"},{"1":"Albania","2":"1983","3":"0.4195175","4":"10986.740","5":"1.0006725","6":"2.548830","7":"50831.43","_rn_":"4"},{"1":"Albania","2":"1984","3":"0.3768510","4":"10849.229","5":"1.0246358","6":"2.588237","7":"53751.48","_rn_":"5"},{"1":"Albania","2":"1985","3":"0.3867719","4":"11042.415","5":"1.0539739","6":"2.624506","7":"56010.12","_rn_":"6"},{"1":"Albania","2":"1986","3":"0.3833166","4":"11660.205","5":"1.0901078","6":"2.648263","7":"58482.48","_rn_":"7"},{"1":"Albania","2":"1987","3":"0.3503911","4":"11568.308","5":"1.1281416","6":"2.672236","7":"61068.25","_rn_":"8"},{"1":"Albania","2":"1988","3":"0.3539001","4":"11403.967","5":"1.1635048","6":"2.696425","7":"63407.10","_rn_":"9"},{"1":"Albania","2":"1989","3":"0.3725055","4":"12526.185","5":"1.1956922","6":"2.720833","7":"66093.03","_rn_":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<div style="page-break-after: always;"></div>
 </div>
 <div id="calculate-real-gdp-per-worker-in-1981-and-2010" class="section level3">
 <h3>Calculate (real) GDP per worker in 1981 and 2010:</h3>
@@ -1664,18 +1665,19 @@ head(country_data_gdp_per_worker_1981_2010, 5)</code></pre>
   </script>
 </div>
 </div>
-<div id="average-output-per-worker-and-average-savings-rate" class="section level3">
-<h3>Average output per worker and average savings rate:</h3>
+<div id="average-savings-rate" class="section level3">
+<h3>Average savings rate:</h3>
 <pre class="r"><code>summary_country_data &lt;- country_data %&gt;% 
   group_by(Country) %&gt;% 
   summarise_at(vars(SavingsRate), list(savings_mean = mean))
 
-head(summary_country_data, 5)</code></pre>
+head(summary_country_data, 10)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["savings_mean"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"Albania","2":"0.2787880"},{"1":"Argentina","2":"0.1849724"},{"1":"Australia","2":"0.2874728"},{"1":"Austria","2":"0.2803114"},{"1":"Bahrain","2":"0.2586320"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["Country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["savings_mean"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"Albania","2":"0.27878799"},{"1":"Argentina","2":"0.18497245"},{"1":"Australia","2":"0.28747278"},{"1":"Austria","2":"0.28031141"},{"1":"Bahrain","2":"0.25863202"},{"1":"Bangladesh","2":"0.16582476"},{"1":"Barbados","2":"0.09136177"},{"1":"Belgium","2":"0.26981514"},{"1":"Belize","2":"0.14530192"},{"1":"Benin","2":"0.10756875"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<div style="page-break-after: always;"></div>
 </div>
 <div id="average-growth-rate-of-the-labor-force-and-average-growth-rate-of-gdp-per-worker-from-1981-to-2010" class="section level3">
 <h3>Average growth rate of the labor force and average growth rate of
@@ -1707,6 +1709,7 @@ head(summary_country_data %&gt;% select(Country, avg_growth_labor, avg_growth_gd
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["avg_growth_labor"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["avg_growth_gdp_per_worker"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["savings_mean"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"Albania","2":"-0.001273320","3":"0.02705051","4":"0.2787880","_rn_":"1"},{"1":"Argentina","2":"0.012385833","3":"0.01457744","4":"0.1849724","_rn_":"2"},{"1":"Australia","2":"0.020416269","3":"0.01128414","4":"0.2874728","_rn_":"3"},{"1":"Austria","2":"0.009319133","3":"0.01276498","4":"0.2803114","_rn_":"4"},{"1":"Bahrain","2":"0.055696186","3":"-0.01847930","4":"0.2586320","_rn_":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<div style="page-break-after: always;"></div>
 </div>
 </div>
 <div id="question-1-descriptive-statistics" class="section level1">
@@ -1738,9 +1741,10 @@ worker</h3>
 {"columns":[{"label":["variable"],"name":[1],"type":["chr"],"align":["left"]},{"label":["value"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"output_per_worker_year_1981_mean","2":"27042.8747"},{"1":"output_per_worker_year_2010_mean","2":"34551.1683"},{"1":"savings_mean_mean","2":"0.2003"},{"1":"avg_growth_labor_mean","2":"0.0225"},{"1":"avg_growth_gdp_per_worker_mean","2":"0.0113"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<div style="page-break-after: always;"></div>
 </div>
-<div id="c-standard-deviation-of-vals-above" class="section level3">
-<h3>c) standard deviation of vals above</h3>
+<div id="c-standard-deviation-of-values-above" class="section level3">
+<h3>c) standard deviation (of values above)</h3>
 <pre class="r"><code>summary_country_data %&gt;% 
   summarise_at(vars(output_per_worker_year_1981, 
                     output_per_worker_year_2010, 
@@ -1754,6 +1758,7 @@ worker</h3>
 {"columns":[{"label":["variable"],"name":[1],"type":["chr"],"align":["left"]},{"label":["value"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"output_per_worker_year_1981_sd","2":"37952.7301"},{"1":"output_per_worker_year_2010_sd","2":"33102.0465"},{"1":"savings_mean_sd","2":"0.0688"},{"1":"avg_growth_labor_sd","2":"0.0131"},{"1":"avg_growth_gdp_per_worker_sd","2":"0.0181"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<div style="page-break-after: always;"></div>
 </div>
 <div id="d-min-and-max-of-vals-above" class="section level3">
 <h3>d) min and max of vals above</h3>
@@ -1787,6 +1792,7 @@ worker</h3>
 {"columns":[{"label":["variable"],"name":[1],"type":["chr"],"align":["left"]},{"label":["value"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"output_per_worker_year_1981_max","2":"241085.8648"},{"1":"output_per_worker_year_2010_max","2":"155184.3351"},{"1":"savings_mean_max","2":"0.4455"},{"1":"avg_growth_labor_max","2":"0.0830"},{"1":"avg_growth_gdp_per_worker_max","2":"0.0820"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<div style="page-break-after: always;"></div>
 </div>
 </div>
 <div id="question-2-unconditional-convergence" class="section level1">
@@ -1805,11 +1811,10 @@ worker</h3>
   # x value:
   log_output_per_worker_year_1981 = log(summary_country_data[[&#39;output_per_worker_year_1981&#39;]])
 )
-
-head(ols_data, 5)</code></pre>
+head(ols_data, 3)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["avg_growth_gdp_per_worker"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["log_output_per_worker_year_1981"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.02705051","2":"9.314117","_rn_":"1"},{"1":"0.01457744","2":"10.100645","_rn_":"2"},{"1":"0.01128414","2":"10.866678","_rn_":"3"},{"1":"0.01276498","2":"10.803426","_rn_":"4"},{"1":"-0.01847930","2":"11.213982","_rn_":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["avg_growth_gdp_per_worker"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["log_output_per_worker_year_1981"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.02705051","2":"9.314117","_rn_":"1"},{"1":"0.01457744","2":"10.100645","_rn_":"2"},{"1":"0.01128414","2":"10.866678","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <pre class="r"><code>ols_model &lt;- lm(avg_growth_gdp_per_worker~log_output_per_worker_year_1981, data=ols_data)
@@ -1843,6 +1848,7 @@ nations, indicated by the negative b1 coefficient. However, the low
 R-squared value (3.48%) suggests that while GDP per worker in 1981 does
 have some predictive power, there are likely other important factors not
 included in the model.</p>
+<div style="page-break-after: always;"></div>
 </div>
 <div id="question-3-mrw-revisited" class="section level1">
 <h1>Question (3) MRW Revisited</h1>
@@ -1893,6 +1899,7 @@ not consistent with the standard assumption of 2/3.</p>
 good job of indicating the variance in the model, and there is not much
 predictive power the coefficients have. The model only explains 21.29%
 of the variance.</p>
+<div style="page-break-after: always;"></div>
 </div>
 <div id="question-4-hj-levels-accounting" class="section level1">
 <h1>Question (4) HJ Levels Accounting</h1>
@@ -1932,6 +1939,7 @@ head(hj_data %&gt;%  select(A_estimate, log_A_estimate), 5)</code></pre>
 {"columns":[{"label":["log_A_mean"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["log_A_sd"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"9.155138","2":"1.105463"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<div style="page-break-after: always;"></div>
 <p>Plots:</p>
 <pre class="r"><code>hj_data %&gt;% 
   ggplot(aes(x=log_A_estimate, y=log(output_per_worker_year_2010))) +

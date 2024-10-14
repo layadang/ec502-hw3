@@ -4,10 +4,12 @@ author: "Laya Dang (pd03@bu.edu)"
 output:
   html_document:
     df_print: paged
+  pdf_document:
+    df_print: kable
 ---
-# Data Set-up
+# Data Import, Clean, and Set-up
 
-### Import tidyverse
+### Import libraries
 
 ```{r}
 suppressPackageStartupMessages({
@@ -20,9 +22,9 @@ suppressPackageStartupMessages({
 
 ```{r}
 country_data = read.csv("cross_country_data.csv")
-head(country_data, 5)
+head(country_data, 10)
 ```
-
+\newpage
 ### Calculate (real) GDP per worker in 1981 and 2010:
 
 ```{r}
@@ -39,16 +41,16 @@ country_data_gdp_per_worker_1981_2010 <- country_data %>%
 head(country_data_gdp_per_worker_1981_2010, 5)
 ```
 
-### Average output per worker and average savings rate:
+### Average savings rate:
 
 ```{r}
 summary_country_data <- country_data %>% 
   group_by(Country) %>% 
   summarise_at(vars(SavingsRate), list(savings_mean = mean))
 
-head(summary_country_data, 5)
+head(summary_country_data, 10)
 ```
-
+\newpage
 ### Average growth rate of the labor force and average growth rate of GDP per worker (from 1981 to 2010):
 
 t = 1981
@@ -81,7 +83,7 @@ summary_country_data <- country_data %>%
 head(summary_country_data %>% select(Country, avg_growth_labor, avg_growth_gdp_per_worker, savings_mean), 5)
 
 ```
-
+\newpage
 # Question (1) Descriptive Statistics
 
 ### a) number of countries
@@ -104,8 +106,8 @@ summary_country_data %>%
   pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
 ```
 
-
-### c) standard deviation of vals above
+\newpage
+### c) standard deviation (of values above)
 
 ```{r}
 summary_country_data %>% 
@@ -117,7 +119,7 @@ summary_country_data %>%
   mutate(across(everything(), ~ round(., digits = 4))) %>%  
   pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
 ```
-
+\newpage
 ### d) min and max of vals above
 
 Min: 
@@ -147,7 +149,7 @@ summary_country_data %>%
   mutate(across(everything(), ~ round(., digits = 4))) %>%  
   pivot_longer(cols=everything(), names_to = "variable", values_to = "value")
 ```
-
+\newpage
 # Question (2) Unconditional Convergence
 
 Plot:
@@ -172,15 +174,12 @@ ols_data <- data.frame(
   # x value:
   log_output_per_worker_year_1981 = log(summary_country_data[['output_per_worker_year_1981']])
 )
-
-head(ols_data, 5)
+head(ols_data, 3)
 ```
 
 ```{r}
-
 ols_model <- lm(avg_growth_gdp_per_worker~log_output_per_worker_year_1981, data=ols_data)
 summary(ols_model)
-
 ```
 
 From the above OLS model, we get the formula where g = 0.037238 + -0.002724 * log(Y/L) + 0.0179
@@ -188,6 +187,8 @@ From the above OLS model, we get the formula where g = 0.037238 + -0.002724 * lo
 The estimate for b1(hat) is -0.002724 and its standard error is 0.001332
 
 This implies that the living standards in nations that are initially poorer (lower GDP per worker in 1981) fall behind compared to wealthier nations, indicated by the negative b1 coefficient. However, the low R-squared value (3.48%) suggests that while GDP per worker in 1981 does have some predictive power, there are likely other important factors not included in the model.
+
+\newpage
 
 # Question (3) MRW Revisited
 
@@ -215,6 +216,8 @@ The estimate for b1(hat) is -0.003519 and its standard error is 0.001218, which 
 The value of alpha is implied to be 0.003519, which means labor share is around (1 - 0.003519) 0.996481, or the majority of output. This is not consistent with the standard assumption of 2/3. 
 
 The R-squared is 0.2129, which indicates that the model does not do a good job of indicating the variance in the model, and there is not much predictive power the coefficients have. The model only explains 21.29% of the variance.
+
+\newpage
 
 # Question (4) HJ Levels Accounting
 
@@ -261,6 +264,7 @@ hj_data %>%
 
 ```
 
+\newpage
 Plots:
 
 ```{r}
